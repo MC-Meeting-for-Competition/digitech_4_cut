@@ -25,6 +25,11 @@ class Routes {
             settings: routeSettings,
             builder: (_) => FrameScreen(),
           );
+        case QRCodeScreen.route:
+          return MaterialPageRoute(
+            settings: routeSettings,
+            builder: (_) => QRCodeScreen(),
+          );
         default:
           return errorRoute(routeSettings);
       }
