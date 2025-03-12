@@ -1,4 +1,3 @@
-import 'package:digitech_four_cut/screens/camera.dart';
 import 'package:digitech_four_cut/screens/index.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +14,16 @@ class Routes {
           return MaterialPageRoute(
             settings: routeSettings,
             builder: (_) => CameraScreen(),
+          );
+        case SelectScreen.route:
+          return MaterialPageRoute(
+            settings: routeSettings,
+            builder: (_) => SelectScreen(),
+          );
+        case FrameScreen.route:
+          return MaterialPageRoute(
+            settings: routeSettings,
+            builder: (_) => FrameScreen(),
           );
         default:
           return errorRoute(routeSettings);
