@@ -20,42 +20,38 @@ class _CameraScreenState extends State<CameraScreen> {
   late Timer _timer;
   int _photoCount = 0;
   var _isLoading = true;
-  var _remainingTime = 15;
+  var _remainingTime = 10;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
     _capturedPhotos = [];
+    _initializeCamera();
   }
 
   void _initializeCamera() async {
-    final cameras = await availableCameras();
-    if (!mounted) return;
-    _controller = CameraController(cameras.last, ResolutionPreset.max);
-    _controller
-        .initialize()
-        .then((_) {
-          if (!mounted) {
-            return;
-          }
-          setState(() {
-            _isLoading = false;
-          });
-          _startAutoCapture();
-        })
-        .catchError((Object e) {
-          if (e is CameraException) {
-            switch (e.code) {
-              case 'CameraAccessDenied':
-                // Handle access errors here.
-                break;
-              default:
-                // Handle other errors here.
-                break;
-            }
-          }
-        });
+    try {
+      final cameras = await availableCameras();
+      if (!mounted) return; // mounted 상태 체크
+      _controller = CameraController(cameras.last, ResolutionPreset.max);
+      await _controller.initialize();
+      if (!mounted) return; // mounted 상태 체크
+      setState(() {
+        _isLoading = false;
+      });
+      _startAutoCapture();
+    } catch (e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            // Handle access errors here.
+            break;
+          default:
+            // Handle other errors here.
+            break;
+        }
+      }
+    }
   }
 
   void _startAutoCapture() {
@@ -91,7 +87,7 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   void dispose() {
     _timer.cancel();
-    _controller.dispose();
+    _controller.dispose(); // 카메라 컨트롤러 해제
     super.dispose();
   }
 
