@@ -40,6 +40,7 @@ dependencies:
   image: ^4.5.3
   image_picker: ^1.1.2
   qr_flutter: ^4.1.0
+  audioplayers: ^6.4.0
 
 dev_dependencies:
   flutter_test:
@@ -121,3 +122,4 @@ flutter:
     - assets/images/sdhs_symbol.jpg
     - assets/images/sdhs_symbol_transparent.png
     - assets/images/sdhs.png
+    - assets/audios/camera-shutter.mp3

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:digitech_four_cut/screens/select.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
   late List<XFile> _capturedPhotos;
+  late AudioPlayer _audioPlayer;
   late Timer _timer;
   int _photoCount = 0;
   var _isLoading = true;
@@ -26,6 +28,7 @@ class _CameraScreenState extends State<CameraScreen> {
   void initState() {
     super.initState();
     _capturedPhotos = [];
+    _audioPlayer = AudioPlayer();
     _initializeCamera();
   }
 
@@ -60,7 +63,7 @@ class _CameraScreenState extends State<CameraScreen> {
         setState(() {
           _remainingTime--; // 남은 시간 1초씩 차감
         });
-      } else if (_photoCount < 7) {
+      } else if (_capturedPhotos.length <= 7) {
         _takePhoto();
       } else {
         _timer.cancel();
@@ -74,7 +77,8 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   void _takePhoto() async {
-    if (_photoCount < 7) {
+    if (_capturedPhotos.length <= 7) {
+      _playShutterSound();
       final XFile photo = await _controller.takePicture();
       setState(() {
         _capturedPhotos.add(photo);
@@ -84,10 +88,17 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  void _playShutterSound() async {
+    await _audioPlayer.play(
+      AssetSource('audios/camera-shutter.mp3'),
+    ); // 셔터음 파일 재생
+  }
+
   @override
   void dispose() {
     _timer.cancel();
     _controller.dispose(); // 카메라 컨트롤러 해제
+    _audioPlayer.dispose(); // 오디오 플레이어 해제
     super.dispose();
   }
 
