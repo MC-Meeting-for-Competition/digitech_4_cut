@@ -22,7 +22,7 @@ class _CameraScreenState extends State<CameraScreen> {
   late Timer _timer;
   int _photoCount = 0;
   var _isLoading = true;
-  var _remainingTime = 10;
+  var _remainingTime = 5;
 
   @override
   void initState() {
@@ -59,31 +59,33 @@ class _CameraScreenState extends State<CameraScreen> {
 
   void _startAutoCapture() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (_remainingTime > 0) {
+      if (_remainingTime > 0 && _capturedPhotos.length < 8) {
         setState(() {
           _remainingTime--; // 남은 시간 1초씩 차감
         });
-      } else if (_capturedPhotos.length <= 7) {
-        _takePhoto();
-      } else {
+      } else if (_capturedPhotos.length == 8) {
         _timer.cancel();
+        _audioPlayer.dispose();
+        _controller.dispose();
         Navigator.pushNamed(
           context,
           SelectScreen.route,
           arguments: _capturedPhotos,
-        ); // MainScreen.route 대신 직접 경로를 설정
+        );
+      } else {
+        _takePhoto();
       }
     });
   }
 
   void _takePhoto() async {
-    if (_capturedPhotos.length <= 7) {
+    if (_capturedPhotos.length <= 8) {
       _playShutterSound();
       final XFile photo = await _controller.takePicture();
       setState(() {
         _capturedPhotos.add(photo);
         _photoCount++;
-        _remainingTime = 10; // 다음 사진 촬영을 위한 타이머 초기화
+        _remainingTime = 5; // 다음 사진 촬영을 위한 타이머 초기화
       });
     }
   }
@@ -123,25 +125,65 @@ class _CameraScreenState extends State<CameraScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Text(
-                      '$_photoCount / 8',
-                      style: TextStyle(
-                        fontFamily: "Pretendard",
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                child: SizedBox(
+                  width: 600,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _remainingTime += 5;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(20),
+                          backgroundColor: Colors.blue, // <-- Button color
+                          foregroundColor: Colors.red, // <-- Splash color
+                        ),
+                        child: Icon(
+                          Icons.timelapse_rounded,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '$_remainingTime',
-                      style: TextStyle(
-                        fontFamily: "Pretendard",
-                        fontSize: 50,
-                        fontWeight: FontWeight.bold,
+                      Column(
+                        children: [
+                          Text(
+                            '$_photoCount / 8',
+                            style: TextStyle(
+                              fontFamily: "Pretendard",
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '$_remainingTime',
+                            style: TextStyle(
+                              fontFamily: "Pretendard",
+                              fontSize: 50,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      ElevatedButton(
+                        onPressed: () {
+                          _takePhoto();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(20),
+                          backgroundColor: Colors.blue, // <-- Button color
+                          foregroundColor: Colors.red, // <-- Splash color
+                        ),
+                        child: Icon(
+                          Icons.camera_alt_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(

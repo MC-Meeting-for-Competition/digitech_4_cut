@@ -129,6 +129,22 @@ class _FrameScreenState extends State<FrameScreen> {
                 ],
               ),
             ),
+            SizedBox(
+              height: 30,
+              child:
+                  (() {
+                    if (_isUploading) {
+                      return Text(
+                        "이미지를 서버에 업로드하고 있어요",
+                        style: TextStyle(
+                          fontFamily: "Pretendard",
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    }
+                  })(),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children:
@@ -255,6 +271,8 @@ class _FrameScreenState extends State<FrameScreen> {
   }
 
   Future<void> uploadImage(File imageFile) async {
+    if (_isUploading) return;
+
     print("업로드 시작");
     if (_isUploading) return;
     setState(() {

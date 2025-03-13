@@ -109,6 +109,7 @@ class _SelectScreenState extends State<SelectScreen> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              if (selectedImages.length >= 4) return;
                               if (selectedImages.contains(idx)) {
                                 selectedImages.remove(idx);
                               } else {
